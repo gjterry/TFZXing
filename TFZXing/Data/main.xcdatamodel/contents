@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3401" systemVersion="13B42" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="ExamResult" representedClassName="ExamResult" syncable="YES">
+        <attribute name="answerPairs" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="answerSheet_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="exam_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="insertTime" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="startTime" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="sync" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+    </entity>
+    <entity name="MyExam" representedClassName="MyExam" syncable="YES">
+        <attribute name="answer_sheet_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="caculated_rate" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="caculated_score" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="exam_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="passed" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="rate_score" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="score" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="submitted_at" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="syncFlag" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="total_score" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="user_id" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="User" representedClassName="User" syncable="YES">
+        <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="avatar_url" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="current_team_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="device_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="password" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="team_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="user_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="user_name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="user_role" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="ExamResult" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="User" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="MyExam" positionX="0" positionY="0" width="0" height="0"/>
+    </elements>
+</model>

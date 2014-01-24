@@ -1,0 +1,193 @@
+
+#import "RFKit.h"
+#import "UIDevice+RFKit.h"
+#import <sys/socket.h>
+#import <sys/sysctl.h>
+#import <net/if.h>
+#import <net/if_dl.h>
+
+@implementation UIDevice (RFKit)
+
+
+
+- (BOOL)isPad {
+    static BOOL isPad = NO;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        if ([self userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            isPad = YES;
+        }
+    });
+    return isPad;
+}
+
+- (BOOL)versionHigherThanIOS7 {
+    return [[[UIDevice currentDevice] systemVersion]floatValue] >= 7.f;
+}
+
+- (BOOL)isRetinaDisplay {
+    static BOOL isRetinaDisplay = NO;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        if ([[UIScreen mainScreen] respondsToSelector:@selector(displayLinkWithTarget:selector:)]
+            && [UIScreen mainScreen].scale == 2.0) {
+            isRetinaDisplay = YES;
+        }
+    });
+    return isRetinaDisplay;
+}
+
+- (NSString *)macAddress {
+	int                 mgmtInfoBase[6];
+	char                *msgBuffer = NULL;
+	size_t              length;
+	unsigned char       macAddress[6];
+	struct if_msghdr    *interfaceMsgStruct;
+	struct sockaddr_dl  *socketStruct;
+	
+	// Setup the management Information Base (mib)
+	mgmtInfoBase[0] = CTL_NET;        // Request network subsystem
+	mgmtInfoBase[1] = AF_ROUTE;       // Routing table info
+	mgmtInfoBase[2] = 0;
+	mgmtInfoBase[3] = AF_LINK;        // Request link layer information
+	mgmtInfoBase[4] = NET_RT_IFLIST;  // Request all configured interfaces
+	
+	// With all configured interfaces requested, get handle index
+	if ((mgmtInfoBase[5] = if_nametoindex("en0")) == 0) {
+        dout_error(@"Get mac address failed: if_nametoindex failure");
+        return nil;
+    }
+
+    // Get the size of the data available (store in len)
+    if (sysctl(mgmtInfoBase, 6, NULL, &length, NULL, 0) < 0) {
+        dout_error(@"Get mac address failed: sysctl mgmtInfoBase failure");
+        return nil;
+    }
+    
+    // Alloc memory based on above call
+    if ((msgBuffer = malloc(length)) == NULL) {
+        dout_error(@"Get mac address failed: buffer allocation failure");
+        return nil;
+    }
+    
+    // Get system information, store in buffer
+    if (sysctl(mgmtInfoBase, 6, msgBuffer, &length, NULL, 0) < 0) {
+        dout_error(@"Get mac address failed: sysctl msgBuffer failure");
+        free(msgBuffer);
+        return nil;
+    }
+	
+	// Map msgbuffer to interface message structure
+	interfaceMsgStruct = (struct if_msghdr *)msgBuffer;
+	
+	// Map to link-level socket structure
+	socketStruct = (struct sockaddr_dl *)(interfaceMsgStruct + 1);
+	
+	// Copy link layer address data in socket structure to an array
+	memcpy(&macAddress, socketStruct->sdl_data + socketStruct->sdl_nlen, 6);
+	
+	// Read from char array into a string object, into traditional Mac address format
+	NSString *macAddressString = [NSString stringWithFormat:@"%02X:%02X:%02X:%02X:%02X:%02X", macAddress[0], macAddress[1], macAddress[2], macAddress[3], macAddress[4], macAddress[5]];
+	
+	free(msgBuffer);
+	return macAddressString;
+}
+
+- (long long)fileSystemFreeSize {
+    NSError *e = nil;
+    NSDictionary *info = [[NSFileManager defaultManager] attributesOfFileSystemForPath:NSHomeDirectory() error:&e];
+    if (e) dout_warning(@"Can`t get file system free size, reason: %@", e);
+    return [info[NSFileSystemFreeSize] longLongValue];
+}
+
+- (long long)fileSystemSize {
+    NSError *e = nil;
+    NSDictionary *info = [[NSFileManager defaultManager] attributesOfFileSystemForPath:NSHomeDirectory() error:&e];
+    if (e) dout_warning(@"Can`t get file system size, reason: %@", e);
+    return [info[NSFileSystemSize] longLongValue];
+}
+
+- (BOOL)isBeingDebugged {
+    int                 junk;
+    int                 mib[4];
+    struct kinfo_proc   info;
+    size_t              size;
+    
+    // Initialize the flags so that, if sysctl fails for some bizarre
+    // reason, we get a predictable result.
+    info.kp_proc.p_flag = 0;
+    
+    // Initialize mib, which tells sysctl the info we want, in this case
+    // we're looking for information about a specific process ID.
+    mib[0] = CTL_KERN;
+    mib[1] = KERN_PROC;
+    mib[2] = KERN_PROC_PID;
+    mib[3] = getpid();
+    
+    // Call sysctl.
+    size = sizeof(info);
+    junk = sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, NULL, 0);
+    assert(junk == 0);
+    
+    // We're being debugged if the P_TRACED flag is set.
+    return ( (info.kp_proc.p_flag & P_TRACED) != 0 );
+}
+
++ (NSString *)platform {
+    size_t size;
+    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    char *machine = malloc(size);
+    sysctlbyname("hw.machine", machine, &size, NULL, 0);
+    NSString *platform = [NSString stringWithCString:machine encoding:NSUTF8StringEncoding];
+    free(machine);
+    return platform;
+}
+
+#pragma mark sysctl utils
+- (NSUInteger) getSysInfo: (uint) typeSpecifier {
+    size_t size = sizeof(int);
+    int results;
+    int mib[2] = {CTL_HW, typeSpecifier};
+    sysctl(mib, 2, &results, &size, NULL, 0);
+    return (NSUInteger) results;
+}
+
+- (NSString *) getSysInfoByName:(char *)typeSpecifier {
+    size_t size;
+    sysctlbyname(typeSpecifier, NULL, &size, NULL, 0);
+    
+    char *answer = malloc(size);
+    sysctlbyname(typeSpecifier, answer, &size, NULL, 0);
+    
+    NSString *results = [NSString stringWithCString:answer encoding: NSUTF8StringEncoding];
+    
+    free(answer);
+    return results;
+}
+
+- (NSString *)hwmodel {
+    return [self getSysInfoByName:"hw.model"];
+}
+
+#pragma mark - DEPRECATED class methods
++ (BOOL)isPad {
+    return [[self currentDevice] isPad];
+}
+
++ (BOOL)isRetinaDisplay {
+    return [[self currentDevice] isRetinaDisplay];
+}
+
++ (NSString *)macAddress {
+    return [[self currentDevice] macAddress];
+}
+
++ (long long)fileSystemFreeSize {
+    return [[self currentDevice] fileSystemFreeSize];
+}
+
++ (long long)fileSystemSize {
+    return [[self currentDevice] fileSystemSize];
+}
+
+@end
