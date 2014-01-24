@@ -6,8 +6,6 @@
 //  Copyright (c) 2014年 Terry. All rights reserved.
 //
 
-
-
 #import "TFAppDelegate.h"
 
 @implementation TFAppDelegate
