@@ -154,7 +154,7 @@
 			remoteGlobalIDString = 1D60398D13DF7CAD006F4B51;
 			remoteInfo = ZXingTests;
 		};
-		DE33C35918921978002FDAF0 /* PBXContainerItemProxy */ = {
+		DE33C49718925183002FDAF0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DE33C32218921923002FDAF0 /* ZXingWidget.xcodeproj */;
 			proxyType = 1;
@@ -983,7 +983,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				DE33C35A18921978002FDAF0 /* PBXTargetDependency */,
+				DE33C49818925183002FDAF0 /* PBXTargetDependency */,
 			);
 			name = TFZXing;
 			productName = TFZXing;
@@ -1210,10 +1210,10 @@
 			target = DE33C2E9189218F2002FDAF0 /* TFZXing */;
 			targetProxy = DE33C310189218F3002FDAF0 /* PBXContainerItemProxy */;
 		};
-		DE33C35A18921978002FDAF0 /* PBXTargetDependency */ = {
+		DE33C49818925183002FDAF0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ZXingWidget;
-			targetProxy = DE33C35918921978002FDAF0 /* PBXContainerItemProxy */;
+			targetProxy = DE33C49718925183002FDAF0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1336,6 +1336,7 @@
 		DE33C31D189218F3002FDAF0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
@@ -1349,8 +1350,10 @@
 					"./zxing/iphone/ZXingWidget/Classes/**",
 				);
 				INFOPLIST_FILE = "TFZXing/TFZXing-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1358,6 +1361,7 @@
 		DE33C31E189218F3002FDAF0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
@@ -1371,8 +1375,10 @@
 					"./zxing/iphone/ZXingWidget/Classes/**",
 				);
 				INFOPLIST_FILE = "TFZXing/TFZXing-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
